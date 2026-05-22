@@ -28,9 +28,11 @@ AI、クラウド連携、FFmpeg は使わず、動画再生・書き出し・�
 
 ```bash
 cd /Users/ryo1280/cursor/mp4Clipper
-make app
-open build/ClipBatcher.app
+make debug
+open build/Debug/ClipBatcher.app
 ```
+
+`make app` でも同じ Debug ビルドの `.app` を `build/ClipBatcher.app` に作成します。
 
 Xcode で開発・実行する場合:
 
@@ -48,6 +50,8 @@ SwiftPM executable としてビルド確認する場合:
 ```bash
 swift build
 ```
+
+`swift build` は SwiftPM の仕様上 `.app` ではなく実行ファイルを生成します。アプリ形式が必要な場合は `make debug` または Xcode の `ClipBatcher` スキームで Debug ビルドしてください。
 
 ## 現時点の制限事項
 
