@@ -4,5 +4,6 @@ struct VideoMetadata: Equatable {
     var filename: String
     var duration: Double
     var resolution: String
+    var displayAspectRatio: Double
     var frameRate: Double?
 }

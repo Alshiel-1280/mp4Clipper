@@ -20,7 +20,7 @@ struct VideoWorkspaceView: View {
                     AppKitPlayerView(player: viewModel.player)
                 }
             }
-            .aspectRatio(16 / 9, contentMode: .fit)
+            .aspectRatio(videoAspectRatio, contentMode: .fit)
             .clipShape(RoundedRectangle(cornerRadius: 6))
 
             VStack(spacing: 8) {
@@ -72,6 +72,10 @@ struct VideoWorkspaceView: View {
             }
         }
         .padding(16)
+    }
+
+    private var videoAspectRatio: Double {
+        viewModel.project?.metadata.displayAspectRatio ?? (16.0 / 9.0)
     }
 }
 
