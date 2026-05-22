@@ -17,7 +17,7 @@ struct VideoWorkspaceView: View {
                     }
                     .foregroundStyle(.secondary)
                 } else {
-                    VideoPlayer(player: viewModel.player)
+                    AppKitPlayerView(player: viewModel.player)
                 }
             }
             .aspectRatio(16 / 9, contentMode: .fit)
@@ -72,5 +72,27 @@ struct VideoWorkspaceView: View {
             }
         }
         .padding(16)
+    }
+}
+
+private struct AppKitPlayerView: NSViewRepresentable {
+    let player: AVPlayer
+
+    func makeNSView(context: Context) -> AVPlayerView {
+        let view = AVPlayerView()
+        view.player = player
+        view.controlsStyle = .none
+        view.videoGravity = .resizeAspect
+        return view
+    }
+
+    func updateNSView(_ nsView: AVPlayerView, context: Context) {
+        if nsView.player !== player {
+            nsView.player = player
+        }
+    }
+
+    static func dismantleNSView(_ nsView: AVPlayerView, coordinator: ()) {
+        nsView.player = nil
     }
 }
