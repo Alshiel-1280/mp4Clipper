@@ -20,17 +20,30 @@ AI、クラウド連携、FFmpeg は使わず、動画再生・書き出し・�
 - macOS 13 以降
 - Xcode 15 以降推奨
 - Swift 5.9 以降
+- XcodeGen（`project.yml` から Xcode project を再生成する場合）
 
 ## 起動方法
 
+通常の macOS アプリとして起動する場合:
+
 ```bash
 cd /Users/ryo1280/cursor/mp4Clipper
-open Package.swift
+make app
+open build/ClipBatcher.app
 ```
 
-Xcode で `mp4Clipper` ターゲットを選択して Run してください。
+Xcode で開発・実行する場合:
 
-CLI でビルド確認する場合:
+```bash
+cd /Users/ryo1280/cursor/mp4Clipper
+open ClipBatcher.xcodeproj
+```
+
+Xcode で `ClipBatcher` スキームを選択して Run してください。
+
+`project.yml` を変更した場合だけ、`xcodegen generate` で `ClipBatcher.xcodeproj` を再生成してください。
+
+SwiftPM executable としてビルド確認する場合:
 
 ```bash
 swift build

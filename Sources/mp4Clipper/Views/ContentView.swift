@@ -10,7 +10,7 @@ struct ContentView: View {
         HStack(spacing: 0) {
             SidebarView(viewModel: viewModel)
                 .environmentObject(settings)
-                .frame(width: 260)
+                .frame(width: 250)
 
             Divider()
 
@@ -20,7 +20,7 @@ struct ContentView: View {
             Divider()
 
             InspectorView(viewModel: viewModel)
-                .frame(width: 420)
+                .frame(width: 400)
         }
         .background(Color(nsColor: .windowBackgroundColor))
         .onAppear {
