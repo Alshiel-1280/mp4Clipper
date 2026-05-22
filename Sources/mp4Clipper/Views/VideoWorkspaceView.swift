@@ -63,6 +63,10 @@ struct VideoWorkspaceView: View {
                         viewModel.captureCurrentScreenshot()
                     }
                     .keyboardShortcut("s", modifiers: [])
+
+                    Button("現在位置を保存") {
+                        viewModel.saveCurrentScreenshot()
+                    }
                 }
                 .disabled(viewModel.project == nil)
             }

@@ -1,5 +1,7 @@
 # Architecture
 
+対象アプリの仮称は ClipBatcher です。リポジトリ名と SwiftPM ターゲット名は `mp4Clipper` としています。
+
 ## 採用技術
 
 - SwiftUI: macOS UI

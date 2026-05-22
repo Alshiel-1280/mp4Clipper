@@ -64,23 +64,36 @@ struct ContentView: View {
         return true
     }
 
-    private func handleKey(_ event: NSEvent) {
+    private func handleKey(_ event: NSEvent) -> Bool {
+        guard !isTextInputFocused else { return false }
+
         switch event.keyCode {
         case 49:
             viewModel.togglePlayback()
+            return true
         case 46:
             viewModel.addMarker()
+            return true
         case 1:
             viewModel.captureCurrentScreenshot()
+            return true
         case 123:
             viewModel.step(event.modifierFlags.contains(.shift) ? -1 : -5)
+            return true
         case 124:
             viewModel.step(event.modifierFlags.contains(.shift) ? 1 : 5)
+            return true
         case 51:
             viewModel.deleteSelectedMarker()
+            return true
         default:
-            break
+            return false
         }
+    }
+
+    private var isTextInputFocused: Bool {
+        guard let responder = NSApp.keyWindow?.firstResponder else { return false }
+        return responder is NSTextView || responder is NSTextField
     }
 }
 

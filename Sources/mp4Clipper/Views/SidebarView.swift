@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct SidebarView: View {
@@ -6,13 +7,20 @@ struct SidebarView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("mp4Clipper")
+            Text("ClipBatcher")
                 .font(.title2.bold())
+            Text("mp4Clipper")
+                .font(.caption)
+                .foregroundStyle(.secondary)
 
             Button("動画を選択") {
                 viewModel.openVideoPanel()
             }
             .buttonStyle(.borderedProminent)
+
+            Button("設定を開く") {
+                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+            }
 
             GroupBox("動画情報") {
                 VStack(alignment: .leading, spacing: 8) {

@@ -25,7 +25,11 @@ final class EditorViewModel: ObservableObject {
 
     func openVideoPanel() {
         let panel = NSOpenPanel()
-        panel.allowedContentTypes = [.mpeg4Movie, .quickTimeMovie, .movie]
+        var allowedTypes: [UTType] = [.mpeg4Movie, .quickTimeMovie, .movie]
+        if let m4v = UTType(filenameExtension: "m4v") {
+            allowedTypes.append(m4v)
+        }
+        panel.allowedContentTypes = allowedTypes
         panel.allowsMultipleSelection = false
         if panel.runModal() == .OK, let url = panel.url {
             Task { await loadVideo(url: url) }
@@ -33,6 +37,11 @@ final class EditorViewModel: ObservableObject {
     }
 
     func loadVideo(url: URL) async {
+        guard isSupportedVideo(url) else {
+            showError("対応している動画形式は mp4 / mov / m4v です")
+            return
+        }
+
         do {
             let (asset, metadata) = try await VideoMetadataService.load(url: url)
             let item = AVPlayerItem(asset: asset)
@@ -133,6 +142,10 @@ final class EditorViewModel: ObservableObject {
 
     func captureCurrentScreenshot() {
         Task { await generateScreenshot(marker: nil, timestamp: currentTime, relativeOffset: nil) }
+    }
+
+    func saveCurrentScreenshot() {
+        Task { await writeCurrentScreenshot() }
     }
 
     func generateScreenshots(for marker: Marker) {
@@ -260,6 +273,45 @@ final class EditorViewModel: ObservableObject {
         }
     }
 
+    private func writeCurrentScreenshot() async {
+        guard let outputDirectory = settings?.outputDirectory else {
+            showError("出力フォルダを設定してください")
+            return
+        }
+        guard let project else {
+            showError("先に動画を読み込んでください")
+            return
+        }
+
+        let timestamp = min(max(0, currentTime), project.metadata.duration)
+        let format = settings?.imageFormat ?? .png
+
+        do {
+            let image = try await ScreenshotExtractionService.extractImage(asset: project.asset, at: timestamp)
+            let url = try FileNamingService.screenshotURL(
+                sourceURL: project.sourceURL,
+                index: (project.screenshotCandidates.count + 1),
+                timestamp: timestamp,
+                relativeOffset: nil,
+                format: format,
+                outputDirectory: outputDirectory
+            )
+            try ScreenshotExtractionService.write(image, to: url, format: format)
+            let candidate = ScreenshotCandidate(
+                markerID: nil,
+                timestamp: timestamp,
+                relativeOffsetSec: nil,
+                previewImage: image,
+                outputURL: url
+            )
+            self.project?.screenshotCandidates.append(candidate)
+            selectedScreenshotID = candidate.id
+            statusMessage = "現在位置のスクショを保存しました: \(url.lastPathComponent)"
+        } catch {
+            showError("現在位置のスクショ保存失敗: \(error.localizedDescription)")
+        }
+    }
+
     private func installTimeObserverIfNeeded() {
         guard timeObserver == nil else { return }
         timeObserver = player.addPeriodicTimeObserver(
@@ -297,6 +349,10 @@ final class EditorViewModel: ObservableObject {
     private func showError(_ message: String) {
         errorMessage = message
         statusMessage = message
+    }
+
+    private func isSupportedVideo(_ url: URL) -> Bool {
+        ["mp4", "mov", "m4v"].contains(url.pathExtension.lowercased())
     }
 }
 
